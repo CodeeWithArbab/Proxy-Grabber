@@ -1,13 +1,12 @@
 import requests
 import random
 
+
 GREEN = "\033[0;32m"
 END = "\033[0m"
 BLUE = "\033[0;34m"
 RED = "\033[0;31m"
 BOLD = "\033[1m"
-
-
 
 def banner():
 
@@ -95,32 +94,35 @@ class ProxyGrabber:
                 exit()
             for json in json_data[0:num]:
                 print(f"{BOLD}Country: {json['country']}\nHost: {json['host']}\nPort: {json['port']}\nPing: {json['ping']}\nSecret: {json['secret']}{END}")
+                print(f"{BOLD}Open in Browser: {END}{BLUE}tg://proxy?server={json['host']}&port={json['port']}&secret={json['secret']}&bot=@mtpro_xyz_bot#{json['country']}{END}")
                 print("-" * 55)
         except requests.exceptions.RequestException as e:
-            print(f"Error fetching data: {e}")
-
+            print(f"{RED}Error fetching data: {e}{END}")
 
     @staticmethod
     def socks5(num):
         if num <= 0:
             print(f"{RED}Please enter a valid number greater than 0.{END}")
             exit()
-            
-        url = "https://mtpro.xyz/api/?type=socks"
-        response = requests.get(url)
-        response.raise_for_status()
-        json_data = response.json()
-        total_items = len(json_data)
         
-        if num > total_items:
-            print(f"{RED}Requested number exceeds available items. Fetching all available items.{END}")
-            print(f"{GREEN}Total items available: {total_items}{END}")
-            exit()
+        try:
+            url = "https://mtpro.xyz/api/?type=socks"
+            response = requests.get(url)
+            response.raise_for_status()
+            json_data = response.json()
+            total_items = len(json_data)
+            
+            if num > total_items:
+                print(f"{RED}Requested number exceeds available items. Fetching all available items.{END}")
+                print(f"{GREEN}Total items available: {total_items}{END}")
+                exit()
 
-        for json in json_data[0:num]:
-            print(f"{BOLD}Country: {json['country']}\nIP: {json['ip']}\nPort: {json['port']}\nPing: {json['ping']}{END}")
-            print("-" * 55)
-
+            for json in json_data[0:num]:
+                print(f"{BOLD}Country: {json['country']}\nIP: {json['ip']}\nPort: {json['port']}\nPing: {json['ping']}{END}")
+                print(f"{BOLD}Open in Browser: {END}{BLUE}tg://socks?server={json['ip']}&port={json['port']}&bot=@mtpro_xyz_bot#{json['country']}{END}")
+                print("-" * 55)
+        except requests.exceptions.RequestException as e:
+            print(f"{RED}Error fetching data: {e}{END}")
 
 def main():
     banner()
@@ -144,4 +146,7 @@ def main():
             print(f"{RED}Invalid choice. Please select 1 or 2.{END}")
 
 if __name__ == "__main__":
-    main()
+    try:
+        main()
+    except KeyboardInterrupt:
+        print("\nExiting the program. Goodbye!")
