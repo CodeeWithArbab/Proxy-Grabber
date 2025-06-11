@@ -76,6 +76,9 @@ class ProxyGrabber:
 
     @staticmethod
     def mtproto(num):
+        if num <= 0:
+            print(f"{RED}Please enter a valid number greater than 0.{END}")
+            exit()
         try:
             url = "https://mtpro.xyz/api/?type=mtproto"
             proxy_grabber = ProxyGrabber()
@@ -84,8 +87,14 @@ class ProxyGrabber:
             response.raise_for_status()
             json_data = response.json()
             
+            total_items = len(json_data)
+
+            if num > total_items:
+                print(f"{RED}Requested number exceeds available items. Fetching all available items.{END}")
+                print(f"{GREEN}Total items available: {total_items}{END}")
+                exit()
             for json in json_data[0:num]:
-                print(f"Country: {json['country']}\nHost: {json['host']}\nPort: {json['port']}\nPing: {json['ping']}\nSecret: {json['secret']}")
+                print(f"{BOLD}Country: {json['country']}\nHost: {json['host']}\nPort: {json['port']}\nPing: {json['ping']}\nSecret: {json['secret']}{END}")
                 print("-" * 55)
         except requests.exceptions.RequestException as e:
             print(f"Error fetching data: {e}")
@@ -93,11 +102,21 @@ class ProxyGrabber:
 
     @staticmethod
     def socks5(num):
+        if num <= 0:
+            print(f"{RED}Please enter a valid number greater than 0.{END}")
+            exit()
+            
         url = "https://mtpro.xyz/api/?type=socks"
         response = requests.get(url)
         response.raise_for_status()
         json_data = response.json()
+        total_items = len(json_data)
         
+        if num > total_items:
+            print(f"{RED}Requested number exceeds available items. Fetching all available items.{END}")
+            print(f"{GREEN}Total items available: {total_items}{END}")
+            exit()
+
         for json in json_data[0:num]:
             print(f"{BOLD}Country: {json['country']}\nIP: {json['ip']}\nPort: {json['port']}\nPing: {json['ping']}{END}")
             print("-" * 55)
@@ -108,11 +127,19 @@ def main():
     choose = input(f'{BLUE}Select Proxy Type (1 for MTProto, 2 for Socks5){END}: ')
     match choose:
         case '1':
-            number_of_proxies = int(input(f"{BLUE}Enter the number of proxies to fetch: {END}"))
-            ProxyGrabber.mtproto(number_of_proxies)
+            try:
+                number_of_proxies = int(input(f"{BLUE}Enter the number of proxies to fetch: {END}"))
+                ProxyGrabber.mtproto(number_of_proxies)
+            except ValueError:
+                print(f"{RED}Invalid input. Please enter a valid number.{END}")
+                exit()
         case '2':
-            number_of_proxies = int(input(f"{BLUE}Enter the number of proxies to fetch: {END}"))
-            ProxyGrabber.socks5(number_of_proxies)
+            try:
+                number_of_proxies = int(input(f"{BLUE}Enter the number of proxies to fetch: {END}"))
+                ProxyGrabber.socks5(number_of_proxies)
+            except ValueError:
+                print(f"{RED}Invalid input. Please enter a valid number.{END}")
+                exit()
         case _:
             print(f"{RED}Invalid choice. Please select 1 or 2.{END}")
 
